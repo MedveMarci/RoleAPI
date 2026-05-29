@@ -74,7 +74,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug-RueI' Or '$(Configuration)' == 'Release-RueI'">
-        <PackageReference Include="RueI" Version="3.1.2" />
+        <PackageReference Include="RueI" Version="3.1.2"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -83,7 +83,7 @@
         <Content Include="..\CHANGELOG.md" Link="CHANGELOG.md"/>
         <Content Include="..\DOCUMENTATION.md" Link="DOCUMENTATION.md"/>
     </ItemGroup>
-    
+
     <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(LABAPI_PLUGINS)' != ''">
         <Exec Command="xcopy &quot;$(TargetPath)&quot; &quot;$(LABAPI_PLUGINS)&quot; /y"/>
     </Target>

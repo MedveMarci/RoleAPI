@@ -8,7 +8,8 @@
 
 ## Overview
 
-RoleAPI is an additive framework on top of **UncomplicatedCustomRoles (UCR)** that lets developers give custom UCR roles:
+RoleAPI is an additive framework on top of **UncomplicatedCustomRoles (UCR)** that lets developers give custom UCR
+roles:
 
 - **Abilities** — activatable via per-player Server-Specific Settings keybinds
 - **Persistent Hint UI** — HintServiceMeow-based HUD showing ability names, status, cooldowns, and conditions
@@ -134,16 +135,16 @@ public class TeleportAbility : AbilityBase
 
 ### Ability Properties Reference
 
-| Property | Type | Default | Description |
-|---|---|---|---|
-| `Name` | `string` | *required* | Display name in the ability HUD |
-| `Description` | `string` | *required* | Shown as SSS keybind description |
-| `MaxUses` | `int` | `-1` | Max uses per life. `-1` = unlimited |
-| `Cooldown` | `float` | `0` | Cooldown in seconds between uses |
-| `SoundFile` | `string?` | `null` | Path to audio file played on use |
-| `SpeakerSettings` | `SpeakerSettings?` | `null` | Overrides role's `DefaultSpeakerSettings` |
-| `DefaultKey` | `KeyCode` | `None` | Suggested keybind (player can rebind in SSS menu) |
-| `Conditions` | `IReadOnlyList<AbilityCondition>` | empty | Pre-use condition checks |
+| Property          | Type                              | Default    | Description                                       |
+|-------------------|-----------------------------------|------------|---------------------------------------------------|
+| `Name`            | `string`                          | *required* | Display name in the ability HUD                   |
+| `Description`     | `string`                          | *required* | Shown as SSS keybind description                  |
+| `MaxUses`         | `int`                             | `-1`       | Max uses per life. `-1` = unlimited               |
+| `Cooldown`        | `float`                           | `0`        | Cooldown in seconds between uses                  |
+| `SoundFile`       | `string?`                         | `null`     | Path to audio file played on use                  |
+| `SpeakerSettings` | `SpeakerSettings?`                | `null`     | Overrides role's `DefaultSpeakerSettings`         |
+| `DefaultKey`      | `KeyCode`                         | `None`     | Suggested keybind (player can rebind in SSS menu) |
+| `Conditions`      | `IReadOnlyList<AbilityCondition>` | empty      | Pre-use condition checks                          |
 
 ---
 
@@ -165,7 +166,8 @@ public class FullStaminaCondition : AbilityCondition
 }
 ```
 
-Conditions are checked **before** `OnExecute` is called. If any condition fails, the player sees the `FailureMessage` as a hint and the ability is blocked (no use/cooldown consumed).
+Conditions are checked **before** `OnExecute` is called. If any condition fails, the player sees the `FailureMessage` as
+a hint and the ability is blocked (no use/cooldown consumed).
 
 The ability HUD also shows the failure message inline when the condition is not met.
 
@@ -175,17 +177,17 @@ The ability HUD also shows the failure message inline when the condition is not 
 
 The context passed to `OnExecute` provides:
 
-| Member | Type | Description |
-|---|---|---|
-| `Player` | `Player` | The player using the ability |
-| `AudioPlayer` | `AudioPlayer?` | Pre-allocated audio player |
-| `RoleSchematic` | `SchematicObject?` | The active schematic for this player |
-| `SoundFile` | `string?` | Set to override the default sound |
-| `LocksDuringExecution` | `bool` | If `true`, blocks other abilities until `CompleteAnimation()` |
-| `IsDenied` | `bool` | Whether `Deny()` has been called |
-| `DenialReason` | `string?` | The denial message |
-| `Deny(string)` | method | Cancel execution with a message |
-| `CompleteAnimation()` | method | Release the animation lock |
+| Member                 | Type               | Description                                                   |
+|------------------------|--------------------|---------------------------------------------------------------|
+| `Player`               | `Player`           | The player using the ability                                  |
+| `AudioPlayer`          | `AudioPlayer?`     | Pre-allocated audio player                                    |
+| `RoleSchematic`        | `SchematicObject?` | The active schematic for this player                          |
+| `SoundFile`            | `string?`          | Set to override the default sound                             |
+| `LocksDuringExecution` | `bool`             | If `true`, blocks other abilities until `CompleteAnimation()` |
+| `IsDenied`             | `bool`             | Whether `Deny()` has been called                              |
+| `DenialReason`         | `string?`          | The denial message                                            |
+| `Deny(string)`         | method             | Cancel execution with a message                               |
+| `CompleteAnimation()`  | method             | Release the animation lock                                    |
 
 ### Animation Lock Example
 
@@ -202,7 +204,8 @@ protected override void OnExecute(AbilityExecutionContext ctx)
 }
 ```
 
-> **Note:** If `LocksDuringExecution = true` and a `SoundFile` is set, the lock is **automatically released** when the audio ends. If no sound file is used, you must call `ctx.CompleteAnimation()` manually.
+> **Note:** If `LocksDuringExecution = true` and a `SoundFile` is set, the lock is **automatically released** when the
+> audio ends. If no sound file is used, you must call `ctx.CompleteAnimation()` manually.
 
 ---
 
@@ -237,13 +240,13 @@ Players automatically see a persistent hint showing all their abilities:
 [H] Shield  ⚠ Need: Full Stamina
 ```
 
-| Status | Meaning |
-|---|---|
-| `✓ Ready` | Ability is available |
-| `⏳ Xs` | On cooldown, ready in X seconds |
-| `✗ Exhausted` | No uses remaining |
-| `⚠ Message` | Condition not met |
-| `⟳ Busy` | Animation lock is active |
+| Status        | Meaning                         |
+|---------------|---------------------------------|
+| `✓ Ready`     | Ability is available            |
+| `⏳ Xs`        | On cooldown, ready in X seconds |
+| `✗ Exhausted` | No uses remaining               |
+| `⚠ Message`   | Condition not met               |
+| `⟳ Busy`      | Animation lock is active        |
 
 The HUD updates dynamically (powered by HintServiceMeow's `AutoText`).
 
@@ -284,12 +287,12 @@ Keybind IDs start at `49000` and increment per ability instance.
 
 ## Lifecycle
 
-| Event | What Happens |
-|---|---|
-| `UcrRoleBase.OnSpawned()` | Schematic spawned, hint added, SSS keybinds sent |
-| Player dies (`PlayerDying`) | Schematic destroyed, hint removed, effects cleared, keybinds refreshed |
-| Player changes role (`PlayerChangedRole`) | Same cleanup if player had a UcrRoleBase role |
-| Player disconnects (`PlayerLeft`) | Full cleanup |
+| Event                                     | What Happens                                                           |
+|-------------------------------------------|------------------------------------------------------------------------|
+| `UcrRoleBase.OnSpawned()`                 | Schematic spawned, hint added, SSS keybinds sent                       |
+| Player dies (`PlayerDying`)               | Schematic destroyed, hint removed, effects cleared, keybinds refreshed |
+| Player changes role (`PlayerChangedRole`) | Same cleanup if player had a UcrRoleBase role                          |
+| Player disconnects (`PlayerLeft`)         | Full cleanup                                                           |
 
 ---
 
@@ -371,54 +374,60 @@ public class ShadowStepAbility : AbilityBase
 ## API Reference Summary
 
 ### `RoleAPI` (static)
-| Method | Description |
-|---|---|
-| `RegisterRole(UcrRoleBase)` | Registers a role with UCR and RoleAPI |
-| `UnregisterRole(UcrRoleBase)` | Unregisters a role from both |
-| `Roles` | All currently registered roles |
+
+| Method                        | Description                           |
+|-------------------------------|---------------------------------------|
+| `RegisterRole(UcrRoleBase)`   | Registers a role with UCR and RoleAPI |
+| `UnregisterRole(UcrRoleBase)` | Unregisters a role from both          |
+| `Roles`                       | All currently registered roles        |
 
 ### `UcrRoleBase`
-| Member | Description |
-|---|---|
-| `DefaultSpeakerSettings` | Default audio settings for abilities |
-| `Schematic` | Schematic config (or `null`) |
-| `Abilities` | List of abilities **(required override)** |
+
+| Member                   | Description                               |
+|--------------------------|-------------------------------------------|
+| `DefaultSpeakerSettings` | Default audio settings for abilities      |
+| `Schematic`              | Schematic config (or `null`)              |
+| `Abilities`              | List of abilities **(required override)** |
 
 ### `AbilityBase`
-| Member | Description |
-|---|---|
-| `Name` | Display name **(required override)** |
-| `Description` | Keybind hint text **(required override)** |
-| `MaxUses` | `-1` = unlimited |
-| `Cooldown` | Seconds between uses |
-| `SoundFile` | Audio file path |
-| `SpeakerSettings` | Audio speaker override |
-| `DefaultKey` | Suggested keybind |
-| `Conditions` | Pre-use condition list |
-| `OnExecute(ctx)` | Ability logic **(required override)** |
+
+| Member            | Description                               |
+|-------------------|-------------------------------------------|
+| `Name`            | Display name **(required override)**      |
+| `Description`     | Keybind hint text **(required override)** |
+| `MaxUses`         | `-1` = unlimited                          |
+| `Cooldown`        | Seconds between uses                      |
+| `SoundFile`       | Audio file path                           |
+| `SpeakerSettings` | Audio speaker override                    |
+| `DefaultKey`      | Suggested keybind                         |
+| `Conditions`      | Pre-use condition list                    |
+| `OnExecute(ctx)`  | Ability logic **(required override)**     |
 
 ### `AbilityCondition`
-| Member | Description |
-|---|---|
+
+| Member           | Description                                        |
+|------------------|----------------------------------------------------|
 | `FailureMessage` | Shown when condition fails **(required override)** |
-| `IsMet(player)` | Return `true` to allow **(required override)** |
+| `IsMet(player)`  | Return `true` to allow **(required override)**     |
 
 ### `RoleSchematic`
-| Property | Type | Description |
-|---|---|---|
-| `Name` | `string` | ProjectMER schematic name |
-| `PositionOffset` | `Vector3` | Offset from player position |
-| `RotationOffset` | `Quaternion` | Rotation offset |
-| `HideCarrierModel` | `bool` | Apply `Invisible` effect |
-| `FadeBaseGameModel` | `bool` | Apply `Fade(255)` effect |
+
+| Property            | Type         | Description                 |
+|---------------------|--------------|-----------------------------|
+| `Name`              | `string`     | ProjectMER schematic name   |
+| `PositionOffset`    | `Vector3`    | Offset from player position |
+| `RotationOffset`    | `Quaternion` | Rotation offset             |
+| `HideCarrierModel`  | `bool`       | Apply `Invisible` effect    |
+| `FadeBaseGameModel` | `bool`       | Apply `Fade(255)` effect    |
 
 ### `AbilityExecutionContext`
-| Member | Description |
-|---|---|
-| `Player` | The executing player |
-| `AudioPlayer` | Allocated audio player |
-| `RoleSchematic` | Active schematic (may be `null`) |
-| `SoundFile` | Override sound file |
-| `LocksDuringExecution` | Enable animation lock |
-| `Deny(reason)` | Cancel with message |
-| `CompleteAnimation()` | Release lock manually |
+
+| Member                 | Description                      |
+|------------------------|----------------------------------|
+| `Player`               | The executing player             |
+| `AudioPlayer`          | Allocated audio player           |
+| `RoleSchematic`        | Active schematic (may be `null`) |
+| `SoundFile`            | Override sound file              |
+| `LocksDuringExecution` | Enable animation lock            |
+| `Deny(reason)`         | Cancel with message              |
+| `CompleteAnimation()`  | Release lock manually            |

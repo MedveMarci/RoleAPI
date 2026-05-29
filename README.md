@@ -6,7 +6,8 @@
 
 ## Role ability framework for SCP: Secret Laboratory
 
-RoleAPI is a developer library built on top of **UncomplicatedCustomRoles (UCR)** and **LabAPI**. It gives custom UCR roles:
+RoleAPI is a developer library built on top of **UncomplicatedCustomRoles (UCR)** and **LabAPI**. It gives custom UCR
+roles:
 
 - **Abilities** — activatable via per-player Server-Specific Settings keybinds
 - **Persistent Hint UI** — persistent HUD showing ability names, cooldowns, and status
@@ -17,19 +18,19 @@ RoleAPI is a developer library built on top of **UncomplicatedCustomRoles (UCR)*
 
 ## Dependencies
 
-| Dependency | Required | Description |
-|---|---|---|
-| [UncomplicatedCustomRoles](https://github.com/UncomplicatedCustomServer/UncomplicatedCustomRoles) | Yes | Custom role framework RoleAPI builds on |
-| [ProjectMER](https://github.com/Michal78900/ProjectMER) | Yes | Schematic spawning and management |
-| [SecretLabNAudio](https://github.com/Axwabo/SecretLabNAudio) | Yes | Audio playback via pooled SpeakerToys |
-| [SecretAPI](https://github.com/MedveMarci/SecretAPI) | Yes | Server-Specific Settings for ability keybinds |
+| Dependency                                                                                        | Required | Description                                   |
+|---------------------------------------------------------------------------------------------------|----------|-----------------------------------------------|
+| [UncomplicatedCustomRoles](https://github.com/UncomplicatedCustomServer/UncomplicatedCustomRoles) | Yes      | Custom role framework RoleAPI builds on       |
+| [ProjectMER](https://github.com/Michal78900/ProjectMER)                                           | Yes      | Schematic spawning and management             |
+| [SecretLabNAudio](https://github.com/Axwabo/SecretLabNAudio)                                      | Yes      | Audio playback via pooled SpeakerToys         |
+| [SecretAPI](https://github.com/MedveMarci/SecretAPI)                                              | Yes      | Server-Specific Settings for ability keybinds |
 
 **Hint backend — pick one DLL variant:**
 
-| DLL variant | Hint plugin | Notes |
-|---|---|---|
-| `RoleAPI.dll` | [HintServiceMeow](https://github.com/MrAfitol/HintServiceMeow) | Recommended |
-| `RoleAPI-RueI.dll` | [RueI](https://github.com/Semper-Viventem/RueI) | Alternative |
+| DLL variant        | Hint plugin                                                    | Notes       |
+|--------------------|----------------------------------------------------------------|-------------|
+| `RoleAPI.dll`      | [HintServiceMeow](https://github.com/MrAfitol/HintServiceMeow) | Recommended |
+| `RoleAPI-RueI.dll` | [RueI](https://github.com/Semper-Viventem/RueI)                | Alternative |
 
 > - **Only install one RoleAPI DLL at a time.**
 > - Every dependency's installation guide can be found in their respective GitHub READMEs.
@@ -39,7 +40,7 @@ RoleAPI is a developer library built on top of **UncomplicatedCustomRoles (UCR)*
 ## Installation (Server)
 
 1. Download from the [latest release](https://github.com/MedveMarci/RoleAPI/releases/latest):
-   - `RoleAPI.dll` *(HintServiceMeow)* **or** `RoleAPI-RueI.dll` *(RueI)* — pick one
+    - `RoleAPI.dll` *(HintServiceMeow)* **or** `RoleAPI-RueI.dll` *(RueI)* — pick one
 2. Place the chosen DLL in `LabAPI/plugins/global/`.
 3. Install all required dependencies listed above, including the matching hint plugin.
 4. Start the server — RoleAPI loads automatically with high priority.
@@ -121,6 +122,8 @@ See [DOCUMENTATION.md](DOCUMENTATION.md) for the full API reference.
 ## Credits
 
 - Developed by **MedveMarci**
-- Custom role framework [UncomplicatedCustomRoles](https://github.com/UncomplicatedCustomServer/UncomplicatedCustomRoles) by **UncomplicatedCustomServer**
+- Custom role
+  framework [UncomplicatedCustomRoles](https://github.com/UncomplicatedCustomServer/UncomplicatedCustomRoles) by *
+  *UncomplicatedCustomServer**
 - Map plugin [ProjectMER](https://github.com/Michal78900/ProjectMER) by **Michal78900**
 - Audio plugin [SecretLabNAudio](https://github.com/Axwabo/SecretLabNAudio) by **Axwabo**
