@@ -5,6 +5,7 @@ using RueI.API.Elements;
 using System.Reflection;
 using HintServiceMeow.Core.Extension;
 using HintServiceMeow.Core.Models.Hints;
+using HintServiceMeow.Core.Models.UnityAdaptors.Parameters;
 using HintServiceMeow.Core.Utilities;
 #endif
 using System;
@@ -368,6 +369,12 @@ internal static class AbilityManager
         if (cfg.HintFontSize != 0)
             hint.FontSize = cfg.HintFontSize;
 
+        for (int i = 0; i < state.Abilities.Count; i++)
+        {
+            if (RegisteredKeybinds.TryGetValue(state.Abilities[i], out var keybind))
+                hint.Parameters.Add(i.ToString(), new SSKeybindParameter(keybind.SettingId));
+        }
+
         state.AbilityHint = hint;
         PlayerDisplay.Get(player).AddHint(hint, HintGroupName);
 #endif
@@ -405,12 +412,19 @@ internal static class AbilityManager
         {
             sb.AppendLine(cfg.HudTitle);
 
-            foreach (var ability in state.Abilities)
+            for (int i = 0; i < state.Abilities.Count; i++)
             {
+                var ability = state.Abilities[i];
                 if (!state.TryGetAbilityData(ability, out var data) || data == null)
                     continue;
 
                 sb.Append(ability.Name);
+                if (RegisteredKeybinds.ContainsKey(ability))
+                {
+                    sb.Append(" {");
+                    sb.Append(i);
+                    sb.Append('}');
+                }
 
                 if (state.IsAnimationLocked)
                 {
