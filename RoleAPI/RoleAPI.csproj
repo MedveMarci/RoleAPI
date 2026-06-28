@@ -81,7 +81,6 @@
     <ItemGroup>
         <Content Include="..\README.md" Link="README.md"/>
         <Content Include="..\LICENSE" Link="LICENSE"/>
-        <Content Include="..\CHANGELOG.md" Link="CHANGELOG.md"/>
         <Content Include="..\DOCUMENTATION.md" Link="DOCUMENTATION.md"/>
     </ItemGroup>
 
