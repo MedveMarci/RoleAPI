@@ -1,6 +1,6 @@
 # RoleAPI
 
-[![Version](https://img.shields.io/github/v/release/MedveMarci/RoleAPI?&label=Version&color=d500ff)](https://github.com/MedveMarci/RoleAPI/releases/latest) [![LabAPI Version](https://img.shields.io/badge/LabAPI_Version-1.1.6-b84ee87)](https://github.com/northwood-studios/LabAPI/releases/tag/1.1.6) [![SCP:SL Version](https://img.shields.io/badge/SCP:SL_Version-14.2.6-blue?&color=e5b200)](https://store.steampowered.com/app/700330/SCP_Secret_Laboratory/)
+[![Version](https://img.shields.io/github/v/release/MedveMarci/RoleAPI?&label=Version&color=d500ff)](https://github.com/MedveMarci/RoleAPI/releases/latest) [![LabAPI Version](https://img.shields.io/badge/LabAPI_Version-1.1.6-b84ee87)](https://github.com/northwood-studios/LabAPI/releases/tag/1.1.7) [![SCP:SL Version](https://img.shields.io/badge/SCP:SL_Version-14.2.7-blue?&color=e5b200)](https://store.steampowered.com/app/700330/SCP_Secret_Laboratory/)
 
 ---
 
