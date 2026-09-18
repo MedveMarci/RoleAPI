@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using RoleAPI.API.Audio;
+using RoleAPI.API.Resources;
 using SecretLabNAudio.Core;
 using UnityEngine;
 
@@ -29,6 +31,22 @@ public abstract class AbilityBase
     ///     Can be overridden per-execution via <see cref="AbilityExecutionContext.SoundFile" />.
     /// </summary>
     public virtual string? SoundFile { get; } = null;
+
+    /// <summary>
+    ///     Gets the name of an embedded audio resource in the ability's own assembly, played when this ability is
+    ///     executed. Takes precedence over <see cref="SoundFile" />.
+    ///     Can be overridden per-execution via <see cref="AbilityExecutionContext.SoundResource" />.
+    ///     See <see cref="EmbeddedResources" /> for how to embed files and how names are matched.
+    /// </summary>
+    public virtual string? SoundResource { get; } = null;
+
+    /// <summary>
+    ///     Gets the audio source played when this ability is executed, for cases where neither
+    ///     <see cref="SoundFile" /> nor <see cref="SoundResource" /> fits (for example a resource in another assembly).
+    ///     Takes precedence over both.
+    ///     Can be overridden per-execution via <see cref="AbilityExecutionContext.Sound" />.
+    /// </summary>
+    public virtual AbilityAudio? Sound { get; } = null;
 
     /// <summary>
     ///     Gets the speaker settings override for this ability's audio.
@@ -71,5 +89,18 @@ public abstract class AbilityBase
     internal void Execute(AbilityExecutionContext ctx)
     {
         OnExecute(ctx);
+    }
+
+    /// <summary>Resolves this ability's default audio from <see cref="Sound" />, <see cref="SoundResource" /> or
+    /// <see cref="SoundFile" />, in that order.</summary>
+    internal AbilityAudio? ResolveSound()
+    {
+        if (Sound != null)
+            return Sound;
+
+        if (!string.IsNullOrEmpty(SoundResource))
+            return AbilityAudio.Embedded(SoundResource!, GetType().Assembly);
+
+        return string.IsNullOrEmpty(SoundFile) ? null : AbilityAudio.File(SoundFile!);
     }
 }

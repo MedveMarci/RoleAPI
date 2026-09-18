@@ -13,6 +13,7 @@ roles:
 - **Persistent Hint UI** — persistent HUD showing ability names, cooldowns, and status
 - **Schematics** — ProjectMER schematic attached to the player, following their movement
 - **Pooled Audio** — SecretLabNAudio SpeakerToy pool for ability sound effects
+- **Embedded Assets** — ship ability audio (and any other file) inside the plugin DLL instead of on disk
 
 ---
 
@@ -106,6 +107,8 @@ public class ShadowStepAbility : AbilityBase
     public override float Cooldown => 12f;
     public override KeyCode DefaultKey => KeyCode.F;
     public override string? SoundFile => "shadow_dash.ogg";
+    // or embed the audio into your plugin DLL:
+    // public override string? SoundResource => "Audio/shadow_dash.ogg";
 
     protected override void OnExecute(AbilityExecutionContext ctx)
     {

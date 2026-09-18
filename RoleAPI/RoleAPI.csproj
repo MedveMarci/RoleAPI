@@ -12,7 +12,7 @@
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release;Debug-RueI;Release-RueI</Configurations>
         <PackageId>RoleAPI</PackageId>
-        <Version>2.0.0</Version>
+        <Version>2.0.2</Version>
         <Authors>MedveMarci</Authors>
         <Description>Additive role ability and schematic framework for SCP:SL plugins.</Description>
         <PackageTags>SCP;SL;LabAPI;Plugin;RoleAPI;ProjectMER</PackageTags>

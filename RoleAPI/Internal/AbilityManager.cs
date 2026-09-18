@@ -10,7 +10,6 @@ using HintServiceMeow.Core.Utilities;
 #endif
 using System;
 using System.Collections.Generic;
-using System.IO;
 using CustomPlayerEffects;
 using LabApi.Features.Wrappers;
 using NorthwoodLib.Pools;
@@ -23,7 +22,6 @@ using RoleAPI.ApiFeatures;
 using RoleAPI.Internal.Settings;
 using SecretAPI.Features.UserSettings;
 using SecretLabNAudio.Core;
-using SecretLabNAudio.Core.Extensions;
 using SecretLabNAudio.Core.Pools;
 using UnityEngine;
 
@@ -246,7 +244,8 @@ internal static class AbilityManager
                              $"Volume={speakerSettings.Volume}, Pitch={speakerSettings.IsSpatial}, Max={speakerSettings.MaxDistance}, Min={speakerSettings.MinDistance}");
             var audioPlayer = AudioPlayerPool.Rent(speakerSettings, player.GameObject?.transform);
 
-            var ctx = new AbilityExecutionContext(player, audioPlayer, state.SpawnedSchematic)
+            var ctx = new AbilityExecutionContext(player, audioPlayer, state.SpawnedSchematic,
+                ability.GetType().Assembly)
             {
                 OnAnimationComplete = () => state.SetAnimationLock(false),
                 LocksDuringExecution = ability.LocksDuringExecution,
@@ -271,20 +270,20 @@ internal static class AbilityManager
             if (!string.IsNullOrEmpty(ctx.ActivationHint))
                 ShowSuccessHint(player, ctx.ActivationHint!);
 
-            var soundFile = ctx.SoundFile ?? ability.SoundFile;
+            var sound = ctx.Sound ?? ability.ResolveSound();
             LogManager.Debug(
-                $"Ability {ability.Name} execution by {player.Nickname} resulted in sound file: {soundFile ?? "null"}");
-            if (!string.IsNullOrEmpty(soundFile))
+                $"Ability {ability.Name} execution by {player.Nickname} resulted in sound: " +
+                $"{sound?.Identifier ?? "null"}{(sound?.IsEmbedded == true ? " (embedded)" : "")}");
+            if (sound != null)
             {
-                if (!File.Exists(soundFile))
+                if (!sound.TryApply(audioPlayer, out var soundError))
                 {
-                    LogManager.Warn($"Sound file not found for ability '{ability.Name}': {soundFile}");
-                    ShowFailHint(player, string.Format(Cfg.FeedbackSoundNotFound, Path.GetFileName(soundFile)));
+                    LogManager.Warn($"Could not play audio for ability '{ability.Name}': {soundError}");
+                    ShowFailHint(player, string.Format(Cfg.FeedbackSoundNotFound, sound.DisplayName));
                     AudioPlayerPool.Return(audioPlayer);
                     return true;
                 }
 
-                audioPlayer.UseFileSafe(soundFile);
                 audioPlayer.Ended += () => AudioPlayerPool.Return(audioPlayer);
 
                 if (!ctx.LocksDuringExecution) return true;
