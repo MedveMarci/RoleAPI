@@ -12,7 +12,7 @@
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release;Debug-RueI;Release-RueI</Configurations>
         <PackageId>RoleAPI</PackageId>
-        <Version>2.0.0</Version>
+        <Version>2.0.2</Version>
         <Authors>MedveMarci</Authors>
         <Description>Additive role ability and schematic framework for SCP:SL plugins.</Description>
         <PackageTags>SCP;SL;LabAPI;Plugin;RoleAPI;ProjectMER</PackageTags>
@@ -53,10 +53,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Northwood.LabAPI" Version="1.1.7" />
-        <PackageReference Include="SecretLabNAudio.Core" Version="2.1.0"/>
+        <PackageReference Include="Northwood.LabAPI" Version="1.1.7"/>
+        <PackageReference Include="SecretLabNAudio.Core" Version="2.1.1"/>
         <PackageReference Include="System.Net.Http" Version="4.3.4"/>
-        <PackageReference Include="System.Text.Json" Version="10.0.9" />
+        <PackageReference Include="System.Text.Json" Version="10.0.9"/>
     </ItemGroup>
 
     <ItemGroup>

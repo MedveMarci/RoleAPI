@@ -1,8 +1,3 @@
-#if RueI
-using RueI.API.Elements;
-#else
-using HintServiceMeow.Core.Models.Hints;
-#endif
 using System.Collections.Generic;
 using LabApi.Features.Wrappers;
 using ProjectMER.Features.Objects;
@@ -11,6 +6,11 @@ using RoleAPI.API.Roles;
 using RoleAPI.API.Schematics;
 using SecretLabNAudio.Core;
 using UnityEngine;
+#if RueI
+using RueI.API.Elements;
+#else
+using HintServiceMeow.Core.Models.Hints;
+#endif
 
 namespace RoleAPI.Internal;
 
@@ -34,14 +34,18 @@ internal sealed class PlayerAbilityState
     internal UcrRoleBase? Role { get; private set; }
 
     internal IReadOnlyList<AbilityBase> Abilities => _abilities;
+
     internal SpeakerSettings? SpeakerSettings { get; set; }
+
     internal RoleSchematic? SchematicConfig { get; private set; }
 
     internal SchematicObject? SpawnedSchematic { get; set; }
+
     internal AudioPlayer? ActiveAudioPlayer { get; set; }
 
 #if RueI
     internal Tag AbilityHintTag { get; } = new();
+
     internal Tag FeedbackHintTag { get; } = new();
 #else
     internal Hint? AbilityHint { get; set; }
@@ -62,14 +66,14 @@ internal sealed class PlayerAbilityState
     {
         lock (StatesLock)
         {
-            var state = new PlayerAbilityState(player)
+            PlayerAbilityState state = new(player)
             {
                 Role = role,
                 SpeakerSettings = role.DefaultSpeakerSettings,
                 SchematicConfig = role.Schematic
             };
 
-            foreach (var ability in role.Abilities)
+            foreach (AbilityBase ability in role.Abilities)
             {
                 state._abilities.Add(ability);
                 state._abilityData[ability] = new PerAbilityData(ability.MaxUses);
@@ -80,17 +84,16 @@ internal sealed class PlayerAbilityState
         }
     }
 
-    internal static PlayerAbilityState CreateForVanilla(Player player, IReadOnlyList<AbilityBase> abilities,
-        SpeakerSettings? speakerSettings)
+    internal static PlayerAbilityState CreateForVanilla(Player player, IReadOnlyList<AbilityBase> abilities, SpeakerSettings? speakerSettings)
     {
         lock (StatesLock)
         {
-            var state = new PlayerAbilityState(player)
+            PlayerAbilityState state = new(player)
             {
                 SpeakerSettings = speakerSettings
             };
 
-            foreach (var ability in abilities)
+            foreach (AbilityBase ability in abilities)
             {
                 state._abilities.Add(ability);
                 state._abilityData[ability] = new PerAbilityData(ability.MaxUses);
@@ -105,10 +108,10 @@ internal sealed class PlayerAbilityState
     {
         lock (StatesLock)
         {
-            if (States.TryGetValue(player, out var existing))
+            if (States.TryGetValue(player, out PlayerAbilityState? existing))
                 return existing;
 
-            var state = new PlayerAbilityState(player);
+            PlayerAbilityState state = new(player);
             States[player] = state;
             return state;
         }
@@ -157,16 +160,19 @@ internal sealed class PlayerAbilityState
 
     internal sealed class PerAbilityData
     {
+        internal int UsesRemaining { get; set; }
+
+        internal float CooldownEndsAt { get; set; }
+
+        internal bool IsOnCooldown => CooldownEndsAt > Time.time;
+
+        internal float RemainingCooldown => Mathf.Max(0f, CooldownEndsAt - Time.time);
+
+        internal bool IsExhausted => UsesRemaining == 0;
+
         internal PerAbilityData(int maxUses)
         {
             UsesRemaining = maxUses;
         }
-
-        internal int UsesRemaining { get; set; }
-        internal float CooldownEndsAt { get; set; }
-
-        internal bool IsOnCooldown => CooldownEndsAt > Time.time;
-        internal float RemainingCooldown => Mathf.Max(0f, CooldownEndsAt - Time.time);
-        internal bool IsExhausted => UsesRemaining == 0;
     }
 }

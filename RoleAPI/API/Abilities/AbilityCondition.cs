@@ -31,13 +31,13 @@ public abstract class AbilityCondition
     {
         private readonly Func<Player, bool> _predicate;
 
+        public override string FailureMessage { get; }
+
         internal LambdaCondition(Func<Player, bool> predicate, string failureMessage)
         {
             _predicate = predicate;
             FailureMessage = failureMessage;
         }
-
-        public override string FailureMessage { get; }
 
         public override bool IsMet(Player player)
         {

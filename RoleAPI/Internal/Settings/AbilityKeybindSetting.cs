@@ -15,39 +15,25 @@ internal sealed class AbilityKeybindSetting : CustomKeybindSetting
 
     private readonly AbilityBase _ability;
 
-    internal AbilityKeybindSetting(AbilityBase ability)
-        : base(
-            GetOrCreateId(ability),
-            ability.Name,
-            ability.DefaultKey,
-            true,
-            false,
-            ability.Description)
+    internal int SettingId { get; }
+
+    public override CustomHeader Header => AbilitiesHeader;
+
+    internal AbilityKeybindSetting(AbilityBase ability) : base(GetOrCreateId(ability), ability.Name, ability.DefaultKey, true, false, ability.Description)
     {
         _ability = ability;
         SettingId = Base.SettingId;
     }
 
-    private AbilityKeybindSetting(AbilityBase ability, int existingId)
-        : base(
-            existingId,
-            ability.Name,
-            ability.DefaultKey,
-            true,
-            false,
-            ability.Description)
+    private AbilityKeybindSetting(AbilityBase ability, int existingId) : base(existingId, ability.Name, ability.DefaultKey, true, false, ability.Description)
     {
         _ability = ability;
         SettingId = existingId;
     }
 
-    internal int SettingId { get; }
-
-    public override CustomHeader Header => AbilitiesHeader;
-
     protected override bool CanView(Player player)
     {
-        return PlayerAbilityState.TryGet(player, out var state) && state != null && state.HasAbility(_ability);
+        return PlayerAbilityState.TryGet(player, out PlayerAbilityState? state) && state != null && state.HasAbility(_ability);
     }
 
     protected override void HandleSettingUpdate()
@@ -65,7 +51,7 @@ internal sealed class AbilityKeybindSetting : CustomKeybindSetting
 
     private static int GetOrCreateId(AbilityBase ability)
     {
-        if (!AbilityIdMap.TryGetValue(ability, out var id))
+        if (!AbilityIdMap.TryGetValue(ability, out int id))
         {
             id = _nextSettingId++;
             AbilityIdMap[ability] = id;
