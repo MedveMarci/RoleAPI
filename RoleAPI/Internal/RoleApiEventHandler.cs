@@ -23,7 +23,7 @@ internal sealed class RoleApiEventHandler : CustomEventsHandler
         if (PlayerAbilityState.TryGet(ev.Player, out _))
             AbilityManager.OnRoleRemoved(ev.Player);
 
-        if (AbilityManager.TryGetVanillaBinding(ev.NewRole.RoleTypeId, out var binding) && binding != null)
+        if (AbilityManager.TryGetVanillaBinding(ev.NewRole.RoleTypeId, out AbilityManager.VanillaRoleBinding? binding) && binding != null)
             AbilityManager.OnVanillaRoleAssigned(ev.Player, binding);
         base.OnPlayerChangedRole(ev);
     }

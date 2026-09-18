@@ -91,8 +91,10 @@ public abstract class AbilityBase
         OnExecute(ctx);
     }
 
-    /// <summary>Resolves this ability's default audio from <see cref="Sound" />, <see cref="SoundResource" /> or
-    /// <see cref="SoundFile" />, in that order.</summary>
+    /// <summary>
+    ///     Resolves this ability's default audio from <see cref="Sound" />, <see cref="SoundResource" /> or
+    ///     <see cref="SoundFile" />, in that order.
+    /// </summary>
     internal AbilityAudio? ResolveSound()
     {
         if (Sound != null)

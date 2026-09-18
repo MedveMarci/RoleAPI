@@ -1,3 +1,23 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using AdminToys;
+using CustomPlayerEffects;
+using LabApi.Features.Wrappers;
+using NorthwoodLib.Pools;
+using PlayerRoles;
+using ProjectMER.Features;
+using ProjectMER.Features.Objects;
+using RoleAPI.API.Abilities;
+using RoleAPI.API.Audio;
+using RoleAPI.API.Roles;
+using RoleAPI.API.Schematics;
+using RoleAPI.ApiFeatures;
+using RoleAPI.Internal.Settings;
+using SecretAPI.Features.UserSettings;
+using SecretLabNAudio.Core;
+using SecretLabNAudio.Core.Pools;
+using UnityEngine;
 #if RueI
 using RueI.API;
 using RueI.API.Elements;
@@ -8,22 +28,6 @@ using HintServiceMeow.Core.Models.Hints;
 using HintServiceMeow.Core.Models.UnityAdaptors.Parameters;
 using HintServiceMeow.Core.Utilities;
 #endif
-using System;
-using System.Collections.Generic;
-using CustomPlayerEffects;
-using LabApi.Features.Wrappers;
-using NorthwoodLib.Pools;
-using PlayerRoles;
-using ProjectMER.Features;
-using RoleAPI.API.Abilities;
-using RoleAPI.API.Roles;
-using RoleAPI.API.Schematics;
-using RoleAPI.ApiFeatures;
-using RoleAPI.Internal.Settings;
-using SecretAPI.Features.UserSettings;
-using SecretLabNAudio.Core;
-using SecretLabNAudio.Core.Pools;
-using UnityEngine;
 
 namespace RoleAPI.Internal;
 
@@ -43,7 +47,7 @@ internal static class AbilityManager
         if (RegisteredKeybinds.ContainsKey(ability))
             return;
 
-        var setting = new AbilityKeybindSetting(ability);
+        AbilityKeybindSetting setting = new(ability);
         RegisteredKeybinds[ability] = setting;
         CustomSetting.Register(setting);
         LogManager.Debug($"Registered keybind for ability: {ability.Name}");
@@ -51,7 +55,7 @@ internal static class AbilityManager
 
     private static void UnregisterKeybind(AbilityBase ability)
     {
-        if (!RegisteredKeybinds.TryGetValue(ability, out var setting))
+        if (!RegisteredKeybinds.TryGetValue(ability, out AbilityKeybindSetting? setting))
             return;
 
         CustomSetting.UnRegister(setting);
@@ -60,22 +64,21 @@ internal static class AbilityManager
 
     internal static void RegisterRoleAbilities(UcrRoleBase role)
     {
-        foreach (var ability in role.Abilities)
+        foreach (AbilityBase ability in role.Abilities)
             EnsureKeybindRegistered(ability);
     }
 
     internal static void UnregisterRoleAbilities(UcrRoleBase role)
     {
-        foreach (var ability in role.Abilities)
+        foreach (AbilityBase ability in role.Abilities)
             UnregisterKeybind(ability);
     }
 
-    internal static void RegisterVanillaBinding(RoleTypeId roleType, IReadOnlyList<AbilityBase> abilities,
-        SpeakerSettings? speakerSettings)
+    internal static void RegisterVanillaBinding(RoleTypeId roleType, IReadOnlyList<AbilityBase> abilities, SpeakerSettings? speakerSettings)
     {
         VanillaBindings[roleType] = new VanillaRoleBinding(abilities, speakerSettings);
 
-        foreach (var ability in abilities)
+        foreach (AbilityBase ability in abilities)
             EnsureKeybindRegistered(ability);
 
         LogManager.Debug($"Registered vanilla binding for {roleType} with {abilities.Count} abilities.");
@@ -98,7 +101,7 @@ internal static class AbilityManager
         {
             CleanupPlayer(player);
 
-            var state = PlayerAbilityState.CreateForRole(player, role);
+            PlayerAbilityState state = PlayerAbilityState.CreateForRole(player, role);
 
             SetupSchematic(player, state, state.SchematicConfig);
 
@@ -119,7 +122,7 @@ internal static class AbilityManager
         {
             CleanupPlayer(player);
 
-            var state = PlayerAbilityState.CreateForVanilla(player, binding.Abilities, binding.SpeakerSettings);
+            PlayerAbilityState state = PlayerAbilityState.CreateForVanilla(player, binding.Abilities, binding.SpeakerSettings);
 
             if (state.Abilities.Count > 0)
                 SetupHint(player, state);
@@ -154,7 +157,7 @@ internal static class AbilityManager
         {
             EnsureKeybindRegistered(ability);
 
-            var state = PlayerAbilityState.GetOrCreate(player);
+            PlayerAbilityState state = PlayerAbilityState.GetOrCreate(player);
             state.AddAbility(ability);
 
             RebuildHint(player, state);
@@ -172,7 +175,7 @@ internal static class AbilityManager
     {
         try
         {
-            if (!PlayerAbilityState.TryGet(player, out var state) || state == null)
+            if (!PlayerAbilityState.TryGet(player, out PlayerAbilityState? state) || state == null)
                 return;
 
             if (!state.RemoveAbility(ability))
@@ -197,14 +200,12 @@ internal static class AbilityManager
         try
         {
             LogManager.Debug($"Attempting to execute ability {ability.Name} for player {player.Nickname}.");
-            if (!PlayerAbilityState.TryGet(player, out var state) || state == null)
+            if (!PlayerAbilityState.TryGet(player, out PlayerAbilityState? state) || state == null)
                 return false;
-            LogManager.Debug(
-                $"Player {player.Nickname} has {state.Abilities.Count} abilities. Checking for {ability.Name}.");
+            LogManager.Debug($"Player {player.Nickname} has {state.Abilities.Count} abilities. Checking for {ability.Name}.");
             if (!state.HasAbility(ability))
                 return false;
-            LogManager.Debug(
-                $"Player {player.Nickname} has ability {ability.Name}. Checking conditions and cooldowns.");
+            LogManager.Debug($"Player {player.Nickname} has ability {ability.Name}. Checking conditions and cooldowns.");
             if (state.IsAnimationLocked)
             {
                 ShowFailHint(player, Cfg.FeedbackBusy);
@@ -212,10 +213,9 @@ internal static class AbilityManager
             }
 
             LogManager.Debug($"Player {player.Nickname} is not busy. Checking ability data for {ability.Name}.");
-            if (!state.TryGetAbilityData(ability, out var abilityData) || abilityData == null)
+            if (!state.TryGetAbilityData(ability, out PlayerAbilityState.PerAbilityData? abilityData) || abilityData == null)
                 return false;
-            LogManager.Debug(
-                $"Ability data for {ability.Name} - UsesRemaining: {abilityData.UsesRemaining}, CooldownEndsAt: {abilityData.CooldownEndsAt}, CurrentTime: {Time.time}");
+            LogManager.Debug($"Ability data for {ability.Name} - UsesRemaining: {abilityData.UsesRemaining}, CooldownEndsAt: {abilityData.CooldownEndsAt}, CurrentTime: {Time.time}");
             if (abilityData.IsExhausted)
             {
                 ShowFailHint(player, string.Format(Cfg.FeedbackNoUses, ability.Name));
@@ -230,22 +230,18 @@ internal static class AbilityManager
             }
 
             LogManager.Debug($"Ability {ability.Name} is not on cooldown. Checking conditions.");
-            foreach (var condition in ability.Conditions)
+            foreach (AbilityCondition condition in ability.Conditions)
                 if (!condition.IsMet(player))
                 {
                     ShowFailHint(player, condition.FailureMessage);
                     return false;
                 }
 
-            var speakerSettings = ability.SpeakerSettings
-                                  ?? state.SpeakerSettings
-                                  ?? SpeakerSettings.Default;
-            LogManager.Debug($"Player {player.Nickname} is executing ability {ability.Name} with speaker settings: " +
-                             $"Volume={speakerSettings.Volume}, Pitch={speakerSettings.IsSpatial}, Max={speakerSettings.MaxDistance}, Min={speakerSettings.MinDistance}");
-            var audioPlayer = AudioPlayerPool.Rent(speakerSettings, player.GameObject?.transform);
+            SpeakerSettings speakerSettings = ability.SpeakerSettings ?? state.SpeakerSettings ?? SpeakerSettings.Default;
+            LogManager.Debug($"Player {player.Nickname} is executing ability {ability.Name} with speaker settings: " + $"Volume={speakerSettings.Volume}, Pitch={speakerSettings.IsSpatial}, Max={speakerSettings.MaxDistance}, Min={speakerSettings.MinDistance}");
+            AudioPlayer audioPlayer = AudioPlayerPool.Rent(speakerSettings, player.GameObject?.transform);
 
-            var ctx = new AbilityExecutionContext(player, audioPlayer, state.SpawnedSchematic,
-                ability.GetType().Assembly)
+            AbilityExecutionContext ctx = new(player, audioPlayer, state.SpawnedSchematic, ability.GetType().Assembly)
             {
                 OnAnimationComplete = () => state.SetAnimationLock(false),
                 LocksDuringExecution = ability.LocksDuringExecution,
@@ -270,13 +266,11 @@ internal static class AbilityManager
             if (!string.IsNullOrEmpty(ctx.ActivationHint))
                 ShowSuccessHint(player, ctx.ActivationHint!);
 
-            var sound = ctx.Sound ?? ability.ResolveSound();
-            LogManager.Debug(
-                $"Ability {ability.Name} execution by {player.Nickname} resulted in sound: " +
-                $"{sound?.Identifier ?? "null"}{(sound?.IsEmbedded == true ? " (embedded)" : "")}");
+            AbilityAudio? sound = ctx.Sound ?? ability.ResolveSound();
+            LogManager.Debug($"Ability {ability.Name} execution by {player.Nickname} resulted in sound: " + $"{sound?.Identifier ?? "null"}{(sound?.IsEmbedded == true ? " (embedded)" : "")}");
             if (sound != null)
             {
-                if (!sound.TryApply(audioPlayer, out var soundError))
+                if (!sound.TryApply(audioPlayer, out string? soundError))
                 {
                     LogManager.Warn($"Could not play audio for ability '{ability.Name}': {soundError}");
                     ShowFailHint(player, string.Format(Cfg.FeedbackSoundNotFound, sound.DisplayName));
@@ -315,13 +309,11 @@ internal static class AbilityManager
 
         try
         {
-            var playerTransform = player.GameObject?.transform;
-            var position = player.Position + config.PositionOffset;
-            var rotation = playerTransform != null
-                ? playerTransform.rotation * Quaternion.Euler(config.RotationOffset)
-                : Quaternion.Euler(config.RotationOffset);
+            Transform? playerTransform = player.GameObject?.transform;
+            Vector3 position = player.Position + config.PositionOffset;
+            Quaternion rotation = playerTransform != null ? playerTransform.rotation * Quaternion.Euler(config.RotationOffset) : Quaternion.Euler(config.RotationOffset);
 
-            var schematic = ObjectSpawner.SpawnSchematic(config.Name, position, rotation);
+            SchematicObject? schematic = ObjectSpawner.SpawnSchematic(config.Name, position, rotation);
 
             if (schematic == null)
             {
@@ -329,7 +321,7 @@ internal static class AbilityManager
                 return;
             }
 
-            foreach (var adminToy in schematic.AdminToyBases)
+            foreach (AdminToyBase adminToy in schematic.AdminToyBases)
                 adminToy.syncInterval = 0f;
 
             state.SpawnedSchematic = schematic;
@@ -349,8 +341,8 @@ internal static class AbilityManager
     private static void SetupHint(Player player, PlayerAbilityState state)
     {
 #if RueI
-        var cfg = Cfg;
-        var element = new DynamicElement(cfg.AbilityHintPosition, () => BuildAbilityHintText(player, state))
+        RoleApiConfig cfg = Cfg;
+        DynamicElement element = new(cfg.AbilityHintPosition, () => BuildAbilityHintText(player, state))
         {
             UpdateInterval = TimeSpan.FromSeconds(1)
         };
@@ -405,16 +397,16 @@ internal static class AbilityManager
 
     private static string BuildAbilityHintText(Player player, PlayerAbilityState state)
     {
-        var cfg = Cfg;
-        var sb = StringBuilderPool.Shared.Rent();
+        RoleApiConfig cfg = Cfg;
+        StringBuilder sb = StringBuilderPool.Shared.Rent();
         try
         {
             sb.AppendLine(cfg.HudTitle);
 
             for (int i = 0; i < state.Abilities.Count; i++)
             {
-                var ability = state.Abilities[i];
-                if (!state.TryGetAbilityData(ability, out var data) || data == null)
+                AbilityBase ability = state.Abilities[i];
+                if (!state.TryGetAbilityData(ability, out PlayerAbilityState.PerAbilityData? data) || data == null)
                     continue;
 
                 sb.Append(ability.Name);
@@ -443,7 +435,7 @@ internal static class AbilityManager
                 else
                 {
                     string? failMsg = null;
-                    foreach (var cond in ability.Conditions)
+                    foreach (AbilityCondition cond in ability.Conditions)
                         if (!cond.IsMet(player))
                         {
                             failMsg = cond.FailureMessage;
@@ -451,9 +443,7 @@ internal static class AbilityManager
                         }
 
                     sb.Append(" — ");
-                    sb.AppendLine(failMsg != null
-                        ? string.Format(cfg.StatusConditionFailed, failMsg)
-                        : cfg.StatusReady);
+                    sb.AppendLine(failMsg != null ? string.Format(cfg.StatusConditionFailed, failMsg) : cfg.StatusReady);
                 }
 
                 if (ability.MaxUses > 0 && data.UsesRemaining >= 0)
@@ -473,8 +463,8 @@ internal static class AbilityManager
     private static void ShowFeedbackHint(Player player, string text)
     {
 #if RueI
-        var element = new BasicElement(Cfg.FeedbackHintPosition, text);
-        if (PlayerAbilityState.TryGet(player, out var state) && state != null)
+        BasicElement element = new(Cfg.FeedbackHintPosition, text);
+        if (PlayerAbilityState.TryGet(player, out PlayerAbilityState? state) && state != null)
             RueDisplay.Get(player.ReferenceHub).Show(state.FeedbackHintTag, element, 5f);
         else
             RueDisplay.Get(player.ReferenceHub).Show(element, 5f);
@@ -514,7 +504,7 @@ internal static class AbilityManager
 
     private static void CleanupPlayer(Player player)
     {
-        if (!PlayerAbilityState.TryGet(player, out var state) || state == null)
+        if (!PlayerAbilityState.TryGet(player, out PlayerAbilityState? state) || state == null)
             return;
 
         if (state.SpawnedSchematic != null)
@@ -537,7 +527,7 @@ internal static class AbilityManager
 #if RueI
         try
         {
-            var display = RueDisplay.Get(player.ReferenceHub);
+            RueDisplay display = RueDisplay.Get(player.ReferenceHub);
             display.Remove(state.AbilityHintTag);
             display.Remove(state.FeedbackHintTag);
         }
@@ -575,7 +565,7 @@ internal static class AbilityManager
         }
 #endif
 
-        var schematicConfig = state.SchematicConfig;
+        RoleSchematic? schematicConfig = state.SchematicConfig;
         if (schematicConfig?.HideCarrierModel == true)
             try
             {
@@ -595,13 +585,14 @@ internal static class AbilityManager
 
     internal sealed class VanillaRoleBinding
     {
+        internal IReadOnlyList<AbilityBase> Abilities { get; }
+
+        internal SpeakerSettings? SpeakerSettings { get; }
+
         internal VanillaRoleBinding(IReadOnlyList<AbilityBase> abilities, SpeakerSettings? speakerSettings)
         {
             Abilities = abilities;
             SpeakerSettings = speakerSettings;
         }
-
-        internal IReadOnlyList<AbilityBase> Abilities { get; }
-        internal SpeakerSettings? SpeakerSettings { get; }
     }
 }

@@ -8,6 +8,7 @@ using RoleAPI.ApiFeatures;
 using SecretLabNAudio.Core;
 using SecretLabNAudio.Core.Extensions;
 using SecretLabNAudio.Core.FileReading;
+using SecretLabNAudio.Core.Processors;
 
 namespace RoleAPI.API.Audio;
 
@@ -15,12 +16,6 @@ public sealed class AbilityAudio
 {
     private static readonly Dictionary<Assembly, string> OverrideDirectories = new();
     private static readonly object OverrideLock = new();
-
-    private AbilityAudio(string identifier, Assembly? assembly)
-    {
-        Identifier = identifier;
-        Assembly = assembly;
-    }
 
     /// <summary>Gets the file path, or the embedded resource name when <see cref="IsEmbedded" /> is <c>true</c>.</summary>
     public string Identifier { get; }
@@ -48,14 +43,20 @@ public sealed class AbilityAudio
             if (!IsEmbedded)
                 return Path.GetFileName(Identifier);
 
-            var normalized = Identifier.Replace('/', '.').Replace('\\', '.');
-            var extension = normalized.LastIndexOf('.');
+            string normalized = Identifier.Replace('/', '.').Replace('\\', '.');
+            int extension = normalized.LastIndexOf('.');
             if (extension <= 0)
                 return normalized;
 
-            var name = normalized.LastIndexOf('.', extension - 1);
+            int name = normalized.LastIndexOf('.', extension - 1);
             return name < 0 ? normalized : normalized.Substring(name + 1);
         }
+    }
+
+    private AbilityAudio(string identifier, Assembly? assembly)
+    {
+        Identifier = identifier;
+        Assembly = assembly;
     }
 
     /// <summary>
@@ -77,9 +78,7 @@ public sealed class AbilityAudio
                 OverrideDirectories[assembly] = directory!;
         }
 
-        LogManager.Debug(string.IsNullOrEmpty(directory)
-            ? $"Cleared audio override directory for {assembly.GetName().Name}."
-            : $"Audio override directory for {assembly.GetName().Name}: {directory}");
+        LogManager.Debug(string.IsNullOrEmpty(directory) ? $"Cleared audio override directory for {assembly.GetName().Name}." : $"Audio override directory for {assembly.GetName().Name}: {directory}");
     }
 
     /// <inheritdoc cref="SetOverrideDirectory(string?, Assembly)" />
@@ -94,9 +93,7 @@ public sealed class AbilityAudio
     {
         lock (OverrideLock)
         {
-            return assembly != null && OverrideDirectories.TryGetValue(assembly, out var directory)
-                ? directory
-                : null;
+            return assembly != null && OverrideDirectories.TryGetValue(assembly, out string? directory) ? directory : null;
         }
     }
 
@@ -109,13 +106,13 @@ public sealed class AbilityAudio
         if (Assembly == null)
             return null;
 
-        var directory = GetOverrideDirectory(Assembly);
+        string? directory = GetOverrideDirectory(Assembly);
         if (string.IsNullOrEmpty(directory))
             return null;
 
         try
         {
-            var path = Path.Combine(directory!, FileName);
+            string path = Path.Combine(directory!, FileName);
             return System.IO.File.Exists(path) ? path : null;
         }
         catch (Exception ex)
@@ -189,7 +186,7 @@ public sealed class AbilityAudio
                 return true;
             }
 
-            var overrideFile = ResolveOverrideFile();
+            string? overrideFile = ResolveOverrideFile();
             if (overrideFile != null)
             {
                 LogManager.Debug($"Using override file '{overrideFile}' instead of embedded '{Identifier}'.");
@@ -197,21 +194,21 @@ public sealed class AbilityAudio
                 return true;
             }
 
-            var stream = EmbeddedResources.OpenStreamCore(Identifier, Assembly);
+            Stream? stream = EmbeddedResources.OpenStreamCore(Identifier, Assembly);
             if (stream == null)
             {
                 error = $"Embedded resource '{Identifier}' not found in {Assembly.GetName().Name}.";
                 return false;
             }
 
-            if (!TryCreateAudioProcessor.FromStream(stream, FileType, true, out var processor))
+            if (!TryCreateAudioProcessor.FromStream(stream, FileType, true, out StreamAudioProcessor? processor))
             {
                 stream.Dispose();
                 error = $"No audio reader is installed for '{FileType}' files ({Identifier}).";
                 return false;
             }
 
-            player.Use(processor, true);
+            player.Use(processor);
             return true;
         }
         catch (Exception ex)

@@ -124,8 +124,8 @@ public class TeleportAbility : AbilityBase
 | `MaxUses`              | `int`                             | `-1`       | Max uses per life. `-1` = unlimited               |
 | `Cooldown`             | `float`                           | `0`        | Cooldown in seconds between uses                  |
 | `SoundFile`            | `string?`                         | `null`     | Path to audio file played on use                  |
-| `SoundResource`        | `string?`                         | `null`     | Embedded audio resource in the ability's assembly  |
-| `Sound`                | `AbilityAudio?`                   | `null`     | Explicit audio source (file or embedded resource)  |
+| `SoundResource`        | `string?`                         | `null`     | Embedded audio resource in the ability's assembly |
+| `Sound`                | `AbilityAudio?`                   | `null`     | Explicit audio source (file or embedded resource) |
 | `SpeakerSettings`      | `SpeakerSettings?`                | `null`     | Overrides role's `DefaultSpeakerSettings`         |
 | `LocksDuringExecution` | `bool`                            | `true`     | Blocks other abilities while audio plays          |
 | `AutoReleaseLock`      | `bool`                            | `true`     | Auto-releases lock when audio ends                |
@@ -237,13 +237,13 @@ Players automatically see a persistent hint showing all their abilities:
 [H] Shield  ⚠ Need: Full Stamina
 ```
 
-| Status        | Meaning                         |
-|---------------|---------------------------------|
+| Status         | Meaning                         |
+|----------------|---------------------------------|
 | `✓ Ready`     | Ability is available            |
 | `⏳ Xs`        | On cooldown, ready in X seconds |
 | `✗ Exhausted` | No uses remaining               |
 | `⚠ Message`   | Condition not met               |
-| `⟳ Busy`      | Animation lock is active        |
+| `⟳ Busy`       | Animation lock is active        |
 
 The HUD updates dynamically via the configured hint backend.
 
@@ -309,8 +309,8 @@ public class YippeeAbility : AbilityBase
 }
 ```
 
-Resolution order for an ability's default audio: **`Sound`** → **`SoundResource`** → **`SoundFile`**.
-Anything set on the context overrides all three.
+Resolution order for an ability's default audio: **`Sound`** → **`SoundResource`** → **`SoundFile`**. Anything set on
+the context overrides all three.
 
 ### Resource names
 
@@ -323,8 +323,8 @@ manifest once.
 
 ### Letting server owners replace embedded audio
 
-Register a directory and any file in it replaces the embedded resource with the same file name — so the plugin works
-out of the box, but the sounds stay customizable:
+Register a directory and any file in it replaces the embedded resource with the same file name — so the plugin works out
+of the box, but the sounds stay customizable:
 
 ```csharp
 // In your plugin's Enable()
@@ -347,16 +347,16 @@ the `SetOverrideDirectory(directory, assembly)` overload to register it on behal
 `RoleAPI.API.Resources.EmbeddedResources` exposes the same lookup for any embedded file. Every method defaults to the
 calling assembly.
 
-| Member                                                   | Description                                        |
-|----------------------------------------------------------|----------------------------------------------------|
-| `GetNames(assembly?)`                                    | All manifest resource names                        |
-| `Exists(name, assembly?)`                                | Whether a resource matches the name                |
-| `TryResolveName(name, out fullName, assembly?)`          | Resolves a name to its full manifest name          |
-| `GetBytes(name, assembly?)`                              | Resource contents (cached)                         |
-| `OpenStream(name, assembly?)`                            | Seekable stream over the resource (caller disposes)|
-| `GetText(name, assembly?)`                               | Resource contents as text                          |
-| `ExtractToFile(name, path, overwrite?, assembly?)`       | Writes the resource to disk                        |
-| `ClearCache(assembly?)`                                  | Drops cached contents and name lookups             |
+| Member                                             | Description                                         |
+|----------------------------------------------------|-----------------------------------------------------|
+| `GetNames(assembly?)`                              | All manifest resource names                         |
+| `Exists(name, assembly?)`                          | Whether a resource matches the name                 |
+| `TryResolveName(name, out fullName, assembly?)`    | Resolves a name to its full manifest name           |
+| `GetBytes(name, assembly?)`                        | Resource contents (cached)                          |
+| `OpenStream(name, assembly?)`                      | Seekable stream over the resource (caller disposes) |
+| `GetText(name, assembly?)`                         | Resource contents as text                           |
+| `ExtractToFile(name, path, overwrite?, assembly?)` | Writes the resource to disk                         |
+| `ClearCache(assembly?)`                            | Drops cached contents and name lookups              |
 
 `ExtractToFile` is useful for assets another plugin can only load from a path (schematics, configs):
 
@@ -367,19 +367,19 @@ EmbeddedResources.ExtractToFile("Schematics/MyRole.json",
 
 ### `AbilityAudio`
 
-| Member                              | Description                                           |
-|-------------------------------------|-------------------------------------------------------|
-| `AbilityAudio.File(path)`           | Audio read from a file on disk                        |
-| `AbilityAudio.Embedded(name)`       | Audio read from the calling assembly's resources      |
-| `AbilityAudio.Embedded(name, asm)`  | Audio read from the given assembly's resources        |
-| `SetOverrideDirectory(dir[, asm])`  | Directory whose files replace that assembly's embedded audio |
-| `GetOverrideDirectory(asm)`         | The override directory registered for an assembly     |
-| `Identifier`                        | File path, or resource name when embedded             |
-| `FileName`                          | Plain file name, the name looked up in the override directory |
-| `IsEmbedded`                        | Whether the audio comes from an embedded resource     |
-| `Assembly`                          | Source assembly, or `null` for files                  |
-| `Exists()`                          | Whether the file, override file or resource can be found |
-| `ResolveOverrideFile()`             | Path of the file replacing this embedded audio, or `null` |
+| Member                             | Description                                                   |
+|------------------------------------|---------------------------------------------------------------|
+| `AbilityAudio.File(path)`          | Audio read from a file on disk                                |
+| `AbilityAudio.Embedded(name)`      | Audio read from the calling assembly's resources              |
+| `AbilityAudio.Embedded(name, asm)` | Audio read from the given assembly's resources                |
+| `SetOverrideDirectory(dir[, asm])` | Directory whose files replace that assembly's embedded audio  |
+| `GetOverrideDirectory(asm)`        | The override directory registered for an assembly             |
+| `Identifier`                       | File path, or resource name when embedded                     |
+| `FileName`                         | Plain file name, the name looked up in the override directory |
+| `IsEmbedded`                       | Whether the audio comes from an embedded resource             |
+| `Assembly`                         | Source assembly, or `null` for files                          |
+| `Exists()`                         | Whether the file, override file or resource can be found      |
+| `ResolveOverrideFile()`            | Path of the file replacing this embedded audio, or `null`     |
 
 ---
 

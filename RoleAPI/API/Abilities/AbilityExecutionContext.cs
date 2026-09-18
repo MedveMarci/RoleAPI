@@ -12,16 +12,6 @@ public sealed class AbilityExecutionContext
 {
     private readonly Assembly _abilityAssembly;
 
-    internal AbilityExecutionContext(Player player, AudioPlayer? audioPlayer, SchematicObject? schematic,
-        Assembly abilityAssembly)
-    {
-        Player = player;
-        AudioPlayer = audioPlayer;
-        RoleSchematic = schematic;
-        Animator = schematic?.AnimationController;
-        _abilityAssembly = abilityAssembly;
-    }
-
     /// <summary>Gets the player who triggered this ability.</summary>
     public Player Player { get; }
 
@@ -92,6 +82,15 @@ public sealed class AbilityExecutionContext
 
     internal Action? OnAnimationComplete { get; set; }
 
+    internal AbilityExecutionContext(Player player, AudioPlayer? audioPlayer, SchematicObject? schematic, Assembly abilityAssembly)
+    {
+        Player = player;
+        AudioPlayer = audioPlayer;
+        RoleSchematic = schematic;
+        Animator = schematic?.AnimationController;
+        _abilityAssembly = abilityAssembly;
+    }
+
     /// <summary>Plays an animation by name on the role schematic's animator.</summary>
     public void PlayAnimation(string animationName)
     {
@@ -101,8 +100,7 @@ public sealed class AbilityExecutionContext
     /// <summary>Returns <see langword="true" /> while the schematic's animation is still in progress.</summary>
     public bool IsAnimationPlaying()
     {
-        return Animator is { Animators.Count: > 0 } &&
-               Animator.Animators[0].GetCurrentAnimatorStateInfo(0).normalizedTime < 1f;
+        return Animator is { Animators.Count: > 0 } && Animator.Animators[0].GetCurrentAnimatorStateInfo(0).normalizedTime < 1f;
     }
 
     /// <summary>

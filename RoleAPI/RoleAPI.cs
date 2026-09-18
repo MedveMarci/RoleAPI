@@ -47,8 +47,7 @@ public static class RoleAPI
     /// <param name="roleType">The vanilla role type to bind to.</param>
     /// <param name="abilities">The abilities to give to players with this role.</param>
     /// <param name="speakerSettings">Optional speaker settings for ability audio.</param>
-    public static void BindToRole(RoleTypeId roleType, IReadOnlyList<AbilityBase> abilities,
-        SpeakerSettings? speakerSettings = null)
+    public static void BindToRole(RoleTypeId roleType, IReadOnlyList<AbilityBase> abilities, SpeakerSettings? speakerSettings = null)
     {
         AbilityManager.RegisterVanillaBinding(roleType, abilities, speakerSettings);
         LogManager.Info($"Bound {abilities.Count} abilities to vanilla role {roleType}.");

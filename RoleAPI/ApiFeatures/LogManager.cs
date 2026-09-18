@@ -6,6 +6,7 @@ namespace RoleAPI.ApiFeatures;
 internal static class LogManager
 {
     private static bool DebugEnabled => RoleApiPlugin.Singleton?.Config.Debug ?? false;
+
     private static string PluginName => RoleApiPlugin.Singleton?.Name ?? "RoleApi";
 
     public static void Debug(string message)
