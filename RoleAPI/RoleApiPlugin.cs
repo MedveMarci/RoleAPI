@@ -19,7 +19,7 @@ public class RoleApiPlugin : Plugin<RoleApiConfig>
 
     public override string Description => "Additive role ability and schematic framework for SCP:SL";
 
-    public override Version Version => new(2, 1, 0);
+    public override Version Version => new(2, 1, 1);
 
     public override Version RequiredApiVersion => new(LabApiProperties.CompiledVersion);
 

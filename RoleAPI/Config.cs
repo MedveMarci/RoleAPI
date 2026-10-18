@@ -10,8 +10,11 @@ public class RoleApiConfig
 
 #if !RueI
     public float HintY { get; set; } = 750f;
+
     public float HintX { get; set; } = -850f;
+
     public int HintFontSize { get; set; } = 18;
+
     public HintAlignment Alignment { get; set; } = HintAlignment.Right;
 #else
     public float AbilityHintPosition { get; set; } = 800f;

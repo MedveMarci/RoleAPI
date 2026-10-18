@@ -1,10 +1,14 @@
 # RoleAPI
 
-[![Version](https://img.shields.io/github/v/release/MedveMarci/RoleAPI?&label=Version&color=d500ff)](https://github.com/MedveMarci/RoleAPI/releases/latest) [![LabAPI Version](https://img.shields.io/badge/LabAPI_Version-1.1.6-b84ee87)](https://github.com/northwood-studios/LabAPI/releases/tag/1.1.7) [![SCP:SL Version](https://img.shields.io/badge/SCP:SL_Version-14.2.7-blue?&color=e5b200)](https://store.steampowered.com/app/700330/SCP_Secret_Laboratory/)
+[![Version](https://img.shields.io/github/v/release/MedveMarci/RoleAPI?label=Version&color=d500ff)](https://github.com/MedveMarci/RoleAPI/releases/latest) [![LabAPI Version](https://img.shields.io/badge/LabAPI_Version-1.1.7-51f4ff)](https://github.com/northwood-studios/LabAPI/releases/tag/1.1.7) [![SCP:SL Version](https://img.shields.io/badge/SCP:SL_Version-14.2.8-e5b200)](https://store.steampowered.com/app/700330/SCP_Secret_Laboratory/) [![Downloads](https://img.shields.io/github/downloads/MedveMarci/RoleAPI/total?label=Downloads&color=ffbf00)](https://github.com/MedveMarci/RoleAPI/releases) [![License](https://img.shields.io/github/license/MedveMarci/RoleAPI?label=License&color=2ea44f)](LICENSE)
+
+A role ability framework for SCP: Secret Laboratory, built on top of
+[UncomplicatedCustomRoles](https://github.com/UncomplicatedCustomServer/UncomplicatedCustomRoles) and
+[LabAPI](https://github.com/northwood-studios/LabAPI).
 
 ---
 
-## Role ability framework for SCP: Secret Laboratory
+## Features
 
 RoleAPI is a developer library built on top of **UncomplicatedCustomRoles (UCR)** and **LabAPI**. It gives custom UCR
 roles:
@@ -28,10 +32,10 @@ roles:
 
 **Hint backend — pick one DLL variant:**
 
-| DLL variant        | Hint plugin                                                    | Notes       |
-|--------------------|----------------------------------------------------------------|-------------|
-| `RoleAPI.dll`      | [HintServiceMeow](https://github.com/MrAfitol/HintServiceMeow) | Recommended |
-| `RoleAPI-RueI.dll` | [RueI](https://github.com/Semper-Viventem/RueI)                | Alternative |
+| DLL variant        | Hint plugin                                                      | Notes       |
+|--------------------|------------------------------------------------------------------|-------------|
+| `RoleAPI.dll`      | [HintServiceMeow](https://github.com/MedveMarci/HintServiceMeow) | Recommended |
+| `RoleAPI-RueI.dll` | [RueI](https://github.com/pawslee/RueI)                          | Alternative |
 
 > - **Only install one RoleAPI DLL at a time.**
 > - Every dependency's installation guide can be found in their respective GitHub READMEs.
@@ -42,7 +46,9 @@ roles:
 
 1. Download from the [latest release](https://github.com/MedveMarci/RoleAPI/releases/latest):
     - `RoleAPI.dll` *(HintServiceMeow)* **or** `RoleAPI-RueI.dll` *(RueI)* — pick one
-2. Place the chosen DLL in `LabAPI/plugins/global/`.
+2. Move the chosen DLL to:
+    - Windows: `%AppData%\SCP Secret Laboratory\LabAPI\plugins\global\`
+    - Linux: `~/.config/SCP Secret Laboratory/LabAPI/plugins/global/`
 3. Install all required dependencies listed above, including the matching hint plugin.
 4. Start the server — RoleAPI loads automatically with high priority.
 
@@ -122,11 +128,17 @@ See [DOCUMENTATION.md](DOCUMENTATION.md) for the full API reference.
 
 ---
 
+## Support
+
+<a href="https://discord.gg/KmpA8cfaSA"><img src="https://www.allkpop.com/upload/2021/01/content/262046/1611711962-discord-button.png" height="80"></a>
+
+---
+
 ## Credits
 
-- Developed by **MedveMarci**
+- Made by [MedveMarci](https://github.com/MedveMarci)
 - Custom role
-  framework [UncomplicatedCustomRoles](https://github.com/UncomplicatedCustomServer/UncomplicatedCustomRoles) by *
-  *UncomplicatedCustomServer**
-- Map plugin [ProjectMER](https://github.com/Michal78900/ProjectMER) by **Michal78900**
-- Audio plugin [SecretLabNAudio](https://github.com/Axwabo/SecretLabNAudio) by **Axwabo**
+  framework [UncomplicatedCustomRoles](https://github.com/UncomplicatedCustomServer/UncomplicatedCustomRoles)
+  by UncomplicatedCustomServer
+- Map plugin [ProjectMER](https://github.com/Michal78900/ProjectMER) by Michal78900
+- Audio plugin [SecretLabNAudio](https://github.com/Axwabo/SecretLabNAudio) by Axwabo

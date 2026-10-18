@@ -1,3 +1,8 @@
+#if RueI
+using RueI.API.Elements;
+#else
+using HintServiceMeow.Core.Models.Hints;
+#endif
 using System.Collections.Generic;
 using LabApi.Features.Wrappers;
 using ProjectMER.Features.Objects;
@@ -6,11 +11,6 @@ using RoleAPI.API.Roles;
 using RoleAPI.API.Schematics;
 using SecretLabNAudio.Core;
 using UnityEngine;
-#if RueI
-using RueI.API.Elements;
-#else
-using HintServiceMeow.Core.Models.Hints;
-#endif
 
 namespace RoleAPI.Internal;
 
@@ -49,6 +49,7 @@ internal sealed class PlayerAbilityState
     internal Tag FeedbackHintTag { get; } = new();
 #else
     internal Hint? AbilityHint { get; set; }
+
     internal Hint? FeedbackHint { get; set; }
 #endif
 
