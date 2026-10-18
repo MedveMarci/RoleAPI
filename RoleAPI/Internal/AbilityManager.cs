@@ -1,3 +1,13 @@
+#if RueI
+using RueI.API;
+using RueI.API.Elements;
+#else
+using System.Reflection;
+using HintServiceMeow.Core.Extension;
+using HintServiceMeow.Core.Models.Hints;
+using HintServiceMeow.Core.Models.UnityAdaptors.Parameters;
+using HintServiceMeow.Core.Utilities;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,16 +28,6 @@ using SecretAPI.Features.UserSettings;
 using SecretLabNAudio.Core;
 using SecretLabNAudio.Core.Pools;
 using UnityEngine;
-#if RueI
-using RueI.API;
-using RueI.API.Elements;
-#else
-using System.Reflection;
-using HintServiceMeow.Core.Extension;
-using HintServiceMeow.Core.Models.Hints;
-using HintServiceMeow.Core.Models.UnityAdaptors.Parameters;
-using HintServiceMeow.Core.Utilities;
-#endif
 
 namespace RoleAPI.Internal;
 
@@ -348,8 +348,8 @@ internal static class AbilityManager
         };
         RueDisplay.Get(player.ReferenceHub).Show(state.AbilityHintTag, element);
 #else
-        var cfg = Cfg;
-        var hint = new Hint
+        RoleApiConfig cfg = Cfg;
+        Hint hint = new()
         {
             YCoordinate = cfg.HintY,
             XCoordinate = cfg.HintX,
@@ -361,10 +361,8 @@ internal static class AbilityManager
             hint.FontSize = cfg.HintFontSize;
 
         for (int i = 0; i < state.Abilities.Count; i++)
-        {
-            if (RegisteredKeybinds.TryGetValue(state.Abilities[i], out var keybind))
+            if (RegisteredKeybinds.TryGetValue(state.Abilities[i], out AbilityKeybindSetting? keybind))
                 hint.Parameters.Add(i.ToString(), new SSKeybindParameter(keybind.SettingId));
-        }
 
         state.AbilityHint = hint;
         PlayerDisplay.Get(player).AddHint(hint, HintGroupName);
@@ -469,7 +467,7 @@ internal static class AbilityManager
         else
             RueDisplay.Get(player.ReferenceHub).Show(element, 5f);
 #else
-        if (PlayerAbilityState.TryGet(player, out var state) && state != null)
+        if (PlayerAbilityState.TryGet(player, out PlayerAbilityState? state) && state != null)
         {
             if (state.FeedbackHint != null)
             {
@@ -479,14 +477,14 @@ internal static class AbilityManager
                 return;
             }
 
-            var hint = new Hint { Text = text };
+            Hint hint = new() { Text = text };
             hint.HideAfter(5);
             state.FeedbackHint = hint;
             PlayerDisplay.Get(player).AddHint(hint, HintGroupName);
         }
         else
         {
-            var hint = new Hint { Text = text };
+            Hint hint = new() { Text = text };
             PlayerDisplay.Get(player).ShowHint(hint, 5);
         }
 #endif
